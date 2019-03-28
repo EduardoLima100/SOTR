@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define N_TASKS 3
+
 typedef struct Task{
 	int prio;
 	int C;
@@ -10,10 +12,9 @@ typedef struct Task{
 	float U;
 } Task;
 
-void analise_u(Task *tasks){
-	prtinf()
+void analise_u(Task *tasks,float n){
+	printf("\n\nAnálise de Utilização");
 	float s = 0;
-	float n = 3;//sizeof(tasks)/sizeof(Task);
 
 	int i;
 	for(i=0;i<n;i++){
@@ -40,27 +41,24 @@ void analise_tr(){
 */
 
 int main(){
-	Task tasks[3];
+	srand(time(0));
+
+	int n = N_TASKS;
+	Task tasks[n];
 	//definir forma aleatória os valores de C e P(srand(); rand())
 
-	tasks[0].P = 100;
-	tasks[0].C = 20;
-	tasks[0].prio = 1;
-	tasks[0].D = tasks[0].P;
-	tasks[0].U = (float)tasks[0].C/(float)tasks[0].P;
+	int i;
+	for(i=0;i<n;i++){
+		tasks[i].P = (rand() % 500);
+		tasks[i].C = (rand() % 100);
+		tasks[i].prio = i;
+		tasks[i].D = tasks[i].P;
+		tasks[i].U = (float)tasks[i].C/(float)tasks[i].P;
+		printf("\nTask = %i", i);
+		printf("\nP = %i", tasks[i].P);
+		printf("\nC = %i\n", tasks[i].C);
+	}
 
-	tasks[1].P = 150;
-	tasks[1].C = 50;
-	tasks[1].prio = 2;
-	tasks[1].D = tasks[1].P;
-	tasks[1].U = (float)tasks[1].C/(float)tasks[1].P;
-
-	tasks[2].P = 200;
-	tasks[2].C = 40;
-	tasks[2].prio = 3;
-	tasks[2].D = tasks[2].P;
-	tasks[2].U = (float)tasks[2].C/(float)tasks[2].P;
-
-	analise_u(tasks);
+	analise_u(tasks,n);
 	//analise_tr();
 }
