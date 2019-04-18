@@ -1,6 +1,6 @@
-/*
-Programação Pthreads
-	Conceitos Básicos
+
+Programação Pthread
+s	Conceitos Básicos
 		Processo
 			Entidade ativa, uma instância de um programa, que está sendo executada
 			Possibilita a execução de diferentes instruções, sendo escalonado pelo sistema operacional para execução
@@ -66,7 +66,7 @@ Programação Pthreads
 		pthread_attr_destroy(attr)
 
 		Exemplo:
-			*/
+
 			#include <pthread.h>
 			#include <stdio.h>
 			#include <stdlib.h>
