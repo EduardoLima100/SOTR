@@ -1,6 +1,6 @@
 
-Programação Pthread
-s	Conceitos Básicos
+Programação Pthreads
+	Conceitos Básicos
 		Processo
 			Entidade ativa, uma instância de um programa, que está sendo executada
 			Possibilita a execução de diferentes instruções, sendo escalonado pelo sistema operacional para execução
