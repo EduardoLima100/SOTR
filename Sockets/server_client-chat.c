@@ -30,12 +30,15 @@ void *cliente(void *arg) {
         bzero(buffer,sizeof(buffer));
         n = read(nodo[cid].newsockfd,buffer,50);
         if(strcmp(buffer,"sair") == 0){
+            pthread_mutex_lock(&m);
             nodo[cid].estado = 0;
-            printf("Cliente %i ficou offline", cid);
+            printf("Cliente %i ficou offline\n", cid);
+            pthread_mutex_unlock(&m);
             pthread_exit(NULL);
         }
-
-        printf("Recebeu: %s - %lu\n", buffer,strlen(buffer));
+        else{
+            printf("Recebeu: %s - %lu\n", buffer,strlen(buffer));
+        }
         if (n < 0) {
             printf("Erro lendo do socket!\n");
             exit(1);
@@ -53,7 +56,6 @@ void *cliente(void *arg) {
                 }
             }
             // COMO LIDAR COM COMANDO SAIR
-
         }
         pthread_mutex_unlock(&m);
         // MUTEX UNLOCK - GERAL
@@ -87,25 +89,34 @@ int main(int argc, char *argv[]) {
     }
     listen(sockfd,5);
     int i
+    int s
     while (1) {
+        s = 0;
+        pthread_mutex_lock(&m);
         for(i=0;i<5;i++){
             if(node[i].estado != 1){
                 id = i;
                 break;
             }
-        }   
-        nodo[id].newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr,&clilen);
-        // MUTEX LOCK - GERAL
-        pthread_mutex_lock(&m);
-        if (nodo[id].newsockfd < 0) {
-            printf("Erro no accept!\n");
-            exit(1);
+            else{
+                s++;
+            }
         }
-        node[id].estado = 1;
-        pthread_create(&t, NULL, cliente, (void *)id);
-        //id++;
-        pthread_mutex_unlock(&m);
-        // MUTEX UNLOCK - GERAL
+        pthread_mutex_unlock(&m);   
+        if(s<=5){ 
+            nodo[id].newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr,&clilen);
+            // MUTEX LOCK - GERAL
+            pthread_mutex_lock(&m);
+            if (nodo[id].newsockfd < 0) {
+                printf("Erro no accept!\n");
+                exit(1);
+            }
+            node[id].estado = 1;
+            pthread_create(&t, NULL, cliente, (void *)id);
+            //id++;
+            pthread_mutex_unlock(&m);
+            // MUTEX UNLOCK - GERAL
+        }
     }
     //    close(newsockfd);
     //    close(sockfd);
