@@ -90,8 +90,8 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     listen(sockfd,5);
-    int i
-    int s
+    int i;
+    int s;
     while (1) {
         s = 0;
         pthread_mutex_lock(&m);
