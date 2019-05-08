@@ -34,7 +34,7 @@ int main(){
 
 	pthread_create(&t, NULL, th_primo,NULL);
 	pthread_setaffinity_np(t,sizeof(t_cpu),&t_cpu);
-	pthread_setschedparam(t,sched_fifo,&t_sched);
+	pthread_setschedparam(t,SHED_FIFO,&t_sched);
 	pthread_join(t,NULL);
 	return 0;
 }
