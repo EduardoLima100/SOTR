@@ -9,6 +9,8 @@
 
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
+pthread_cond_t 
+
 // indexador do vetor de nodos conhecidos
 int id = 0;
 
@@ -34,6 +36,7 @@ void *cliente(void *arg) {
             nodo[cid].estado = 0;
             printf("Cliente %i ficou offline\n", cid);
             pthread_mutex_unlock(&m);
+            0
             pthread_exit(NULL);
         }
         else{
