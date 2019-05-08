@@ -42,7 +42,7 @@ Programação Utilizando Sockets
 				sock = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 
 		A função bind associa um socket com uma porta para uso:
-			int status = cind(sock,addrport,size);
+			int status = bind(sock,addrport,size);
 			status:retorna o status da função, 0 sucesso, -1 erro
 			sock: socket a ser associado (criado anteriormente)
 			addrport: estrutura contendo o endereço do socket
