@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
             return -1;
         }
         if (strcmp(buffer,"sair\n") == 0) {
+            send(sockfd, "sair", 4, 0);
             break;
         }
     } while (1);
