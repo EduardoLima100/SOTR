@@ -1,3 +1,4 @@
+/*
 Programação Pthreads (Mutexes)
 	Semáforos
 		Lembrando:
@@ -27,7 +28,7 @@ Programação Pthreads (Mutexes)
 			int pthread_mutex_unlock(pthread_mutex_t *mutex);	//Libera o mutex para uso
 
 	Exemplo:
-
+*/
 		#include <pthread.h>
 		#include <stdio.h>
 		#include <stdlib.h>
