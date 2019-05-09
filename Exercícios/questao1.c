@@ -35,7 +35,7 @@ int main(){
 
 	pthread_t t;
 	pthread_create(&t, NULL, th_primos,NULL);
-	pthread_setschedparam(t,SHED_FIFO,&t_sched);
+	pthread_setschedparam(t,SCHED_FIFO,&t_sched);
 
 	pthread_join(t, NULL);
 
