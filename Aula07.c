@@ -36,7 +36,7 @@ Programação Pthreads (Mutexes)
 
 		#define NUM_THREADS	5
 
-		pthread_mutex_t mutex = PTREAD_MUTEX_INITIALIZER;
+		pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 		void *PrintHello(void *threadid){
 			long tid;
