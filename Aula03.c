@@ -1,6 +1,6 @@
 //Aula 02
 
-"""
+
 Escalonamento Taxa Monotônica(RM)
 	Tarefas são periódicas e independentes
 	O "deadline" das tarefas são iguais aos seus períodos (Di = Pi)
@@ -46,9 +46,9 @@ Escalonamento Deadline Monotônico (DM):
 	O "deadline" das tarefas são iguais ou menores ao do seu período (Di <= Pi)
 	Tempo de computação da tarefa Ci é conhecido e constante (derivação do WECET)
 	O tempo "overhead" para o chaveamento entre tarefas (context switch) é dito nulo
-"""
 
-"""
+
+
 Análise por Tempo de Resposta
 	Análise de escalonamento exata (tanto suficiente como necessária)
 	Utilizada para modelos de escalonamento baseado em prioridades estáticas
@@ -93,4 +93,4 @@ Análise por Tempo de Resposta
 			Ri 0 = Ci
 
 		O método converge quando a tarefa é escalonável
-"""
+
