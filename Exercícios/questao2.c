@@ -11,6 +11,7 @@ void *thread_A(){
 	while(1){
 		pthread_mutex_lock(&m);
 		buffer++;
+		printf("A: %i", buffer);
 		pthread_cond_signal(&c);
 		pthread_mutex_unlock(&m);
 	}
@@ -23,6 +24,7 @@ void *thread_B(){
 			pthread_cond_wait(&c, &m);
 		}
 		buffer--;
+		printf("B: %i", buffer);
 		pthread_mutex_unlock(&m);
 	}
 }
