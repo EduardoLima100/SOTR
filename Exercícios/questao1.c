@@ -1,9 +1,10 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <sched.h>
-#define _GNU_SOURCE
+
 
 int primo(int n, int d){
 	int r = n%d;
