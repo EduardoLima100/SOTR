@@ -7,7 +7,7 @@ void *Define_T();
 int primo(int numero, int divisor);
 
 int main(){
-  CEPU_SET_T d;
+  CPU_SET_T d;
   struct SCHED_PARAM p;
   p.SCHED_PRIORITY = 5; // Prioridade 5
   long count = 0;
