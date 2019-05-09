@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sched.h>
 
 int primo(int n, int d){
-	r = n%d;
+	int r = n%d;
 	if(r==0 && d!=1 && n!=d){
 		return 0;
 	}
@@ -21,7 +22,7 @@ void *th_primos(void *arg){
 			printf("%d é primo\n",i);
 		}
 	}
-	pthread_exit();
+	pthread_exit(NULL);
 }
 
 int main(){
