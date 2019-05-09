@@ -26,7 +26,7 @@ void *th_primos(void *arg){
 }
 
 int main(){
-	struct cpu_set t_cpu;
+	void CPU_SET t_cpu;
 	CPU_ZERO(&t_cpu);
 	CPU_SET(4,&t_cpu);
 
