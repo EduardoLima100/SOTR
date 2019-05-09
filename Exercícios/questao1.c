@@ -27,11 +27,11 @@ void *th_primos(void *arg){
 }
 
 int main(){
-	struct CPU_SET_T t_cpu;
+	struct cpu_set_t t_cpu;
 	CPU_ZERO(&t_cpu);
 	CPU_SET(4,&t_cpu);
 
-	struct SCHED_PARAM t_sched;
+	struct sched_param t_sched;
 	t_sched.SCHED_PRIORITY = 5;
 
 	pthread_t t;
