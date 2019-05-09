@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sched.h>
+#define _GNU_SOURCE //See feature_test_macros(7)
+
 
 void *Define_T();
 int primo(int numero, int divisor);
