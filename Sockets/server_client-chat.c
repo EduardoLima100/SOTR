@@ -34,7 +34,7 @@ void *cliente(void *arg) {
             pthread_mutex_lock(&m);
             nodo[cid].estado = 0;
             printf("Cliente %i ficou offline\n", cid);
-            pthread_cond_signal(&cond;
+            pthread_cond_signal(&cond);
             pthread_mutex_unlock(&m);
             pthread_exit(NULL);
         }
@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     listen(sockfd,0);
+    printf("O server está online...\n")
     int i;
     int s;
     while (1) {
@@ -105,6 +106,7 @@ int main(int argc, char *argv[]) {
             }
         }
         pthread_mutex_unlock(&m);   
+        
         while(s>=5){
             pthread_cond_wait(&cond, &m);
         }
