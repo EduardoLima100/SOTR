@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     listen(sockfd,0);
-    printf("O server está online...\n")
+    printf("O server está online...\n");
     int i;
     int s;
     while (1) {
