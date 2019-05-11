@@ -21,7 +21,7 @@ void *leitura(void *arg) {
             printf("\nErro lendo do socket!\n");
             exit(1);
         }
-        printf("\nMSG: %s\nDigite a mensagem (ou sair):",buffer);
+        printf("\nMSG: %s\n",buffer);
     }
 }
 
