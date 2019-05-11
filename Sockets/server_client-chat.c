@@ -39,7 +39,7 @@ void *cliente(void *arg) {
             pthread_exit(NULL);
         }
         else{
-            printf("Recebeu: %s - %lu\n", buffer,strlen(buffer));
+            printf("Cliente %i enviou: %s - %lu\n", cid, buffer,strlen(buffer));
         }
         if (n < 0) {
             printf("Erro lendo do socket!\n");
