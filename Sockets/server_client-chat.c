@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
         printf("Erro fazendo bind!\n");
         exit(1);
     }
-    listen(sockfd,0);
+    listen(sockfd,5);
     printf("O server está online...\n");
     int i;
     int s;
