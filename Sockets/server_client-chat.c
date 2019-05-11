@@ -39,10 +39,20 @@ void *cliente(void *arg) {
             pthread_exit(NULL);
         }
         else{
-            printf("Cliente %i enviou: %s - %lu\n", cid, buffer,strlen(buffer));
+            if(strlen(buffer)>0){
+                printf("\nCliente %i enviou: %s - %lu\n", cid, buffer,strlen(buffer));
+            }
+            else{
+                pthread_mutex_lock(&m);
+                nodo[cid].estado = 0;
+                printf("Cliente %i ficou offline\n", cid);
+                pthread_cond_signal(&cond);
+                pthread_mutex_unlock(&m);
+                pthread_exit(NULL); 
+            }
         }
         if (n < 0) {
-            printf("Erro lendo do socket!\n");
+            printf("\nErro lendo do socket!\n");
             exit(1);
         }
         // MUTEX LOCK - GERAL
@@ -117,6 +127,9 @@ int main(int argc, char *argv[]) {
         if (nodo[id].newsockfd < 0) {
             printf("Erro no accept!\n");
             exit(1);
+        }
+        else{
+            printf("Cliente %i ficou online", id);
         }
         nodo[id].estado = 1;
         pthread_create(&t, NULL, cliente, (void *)id);
