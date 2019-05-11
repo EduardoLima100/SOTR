@@ -34,7 +34,7 @@ void *cliente(void *arg) {
             pthread_mutex_lock(&m);
             nodo[cid].estado = 0;
             printf("Cliente %i ficou offline\n", cid);
-            pthread_cond_signal(&c);
+            pthread_cond_signal(&cond;
             pthread_mutex_unlock(&m);
             pthread_exit(NULL);
         }
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         printf("Erro fazendo bind!\n");
         exit(1);
     }
-    listen(sockfd,5);
+    listen(sockfd,0);
     int i;
     int s;
     while (1) {
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
         }
         pthread_mutex_unlock(&m);   
         while(s>=5){
-            pthread_cond_wait(&c, &m);
+            pthread_cond_wait(&cond, &m);
         }
         
         nodo[id].newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr,&clilen);
