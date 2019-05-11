@@ -22,6 +22,7 @@ void *leitura(void *arg) {
             exit(1);
         }
         printf("\nMSG: %s\nDigite a mensagem (ou sair):",buffer);
+    }
 }
 
 int main(int argc, char *argv[]) {
