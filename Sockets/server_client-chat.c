@@ -8,8 +8,7 @@
 #include <pthread.h>
 
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
-
-//pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 // indexador do vetor de nodos conhecidos
 int id = 0;
@@ -35,6 +34,7 @@ void *cliente(void *arg) {
             pthread_mutex_lock(&m);
             nodo[cid].estado = 0;
             printf("Cliente %i ficou offline\n", cid);
+            pthread_cond_signal(&c);
             pthread_mutex_unlock(&m);
             pthread_exit(NULL);
         }
@@ -105,20 +105,23 @@ int main(int argc, char *argv[]) {
             }
         }
         pthread_mutex_unlock(&m);   
-        if(s<=5){ 
-            nodo[id].newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr,&clilen);
-            // MUTEX LOCK - GERAL
-            pthread_mutex_lock(&m);
-            if (nodo[id].newsockfd < 0) {
-                printf("Erro no accept!\n");
-                exit(1);
-            }
-            nodo[id].estado = 1;
-            pthread_create(&t, NULL, cliente, (void *)id);
-            //id++;
-            pthread_mutex_unlock(&m);
-            // MUTEX UNLOCK - GERAL
+        while(s>=5){
+            pthread_cond_wait(&c, &m);
         }
+        
+        nodo[id].newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr,&clilen);
+        // MUTEX LOCK - GERAL
+        pthread_mutex_lock(&m);
+        if (nodo[id].newsockfd < 0) {
+            printf("Erro no accept!\n");
+            exit(1);
+        }
+        nodo[id].estado = 1;
+        pthread_create(&t, NULL, cliente, (void *)id);
+        //id++;
+        pthread_mutex_unlock(&m);
+        // MUTEX UNLOCK - GERAL
+        
     }
     //    close(newsockfd);
     //    close(sockfd);
