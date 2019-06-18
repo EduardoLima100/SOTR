@@ -27,4 +27,44 @@ Tarefas:
 * Envio da informação da temperatura para o monitor
 * Controle do relé
 * Recepção de comandos do monitor
+
+Ojetivos adicionais:
+
+* Programar rampas de temperaturas e seus tempos
+* Avisar trocas de temperaturas
+
+
+# Desenvolvimento
+
+**Controle:**
 	
+* Conectar com um ou mais embarcados
+
+Comandos enviados:
+
+* Liga
+* Desliga
+* Configurar
+	
+	* Temperatura: max e min
+	* Modo: aquecimento e resfriamento
+
+* Solicitar estado atual (temperatura, modo, max e min)
+
+**Embarcado**
+
+* Conexão com o monitor
+
+Funções:
+
+* Leitura da temperatura
+* Controle do relé
+
+Comunicação com o monitor:
+
+* Envio da temperatura para o monitor
+* Recepção de controles do monitor
+
+
+
+
