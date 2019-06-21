@@ -131,7 +131,7 @@ void *on_off(void*arg){
     while(1){
         pthread_cond_wait(&TMP_change, &m);
         pthread_mutex_lock(&m);
-        if(RUN){}
+        if(RUN){
             switch(mode){
                 case 0:
                 if(TMP>tmax){
