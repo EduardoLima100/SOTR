@@ -28,7 +28,6 @@ float TMP; //entrada do sensor
 int RUN = 0;
 int rele = 0;
 
-
 int tmin, tmax; //temperatura: min e max
 int mode = 0; //0 para esfriar 1 para esquentar
 
@@ -73,14 +72,14 @@ void *cmd_read(void *arg){
                 printf("\nErro lendo do socket!\n");
                 exit(1);
             }
-            tmin = int(buffer);
+            tmin = atoi(buffer);
             bzero(buffer,sizeof(buffer));
             n = recv(sockfd,buffer,50,0);
             if(n<=0){
                 printf("\nErro lendo do socket!\n");
                 exit(1);
             }
-            tmax = int(buffer);
+            tmax = atoi(buffer);
 
         }
         if(strcmp(buffer,"mode")){
@@ -90,18 +89,11 @@ void *cmd_read(void *arg){
                 printf("\nErro lendo do socket!\n");
                 exit(1);
             }
-            mode = int(buffer);
+            mode = atoi(buffer);
         }
         if(strcmp(buffer,"status")){
             pthread_mutex_lock(&m);
-            n = send(sockfd,("
-                Temperatura atual: %f\n
-                Modo %i\n
-                Temperatura mínima: %i\n
-                Temperatura máxima: %i\n
-                Rele: %i\n
-                Run: %i",
-                TMP,mode,tmin,tmax,rele,RUN),50,0);
+            n = send(sockfd,("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN),50,0);
             if (n == -1) {
                 printf("\nErro escrevendo no socket!\n");
                 return -1;
@@ -135,31 +127,33 @@ void *on_off(void*arg){
     while(1){
         pthread_cond_wait(&TMP_change, &m);
         pthread_mutex_lock(&m);
-        switch(mode){
-            case 0:
-            if(tmp>tmax){
-                rele = 1;
-                pthread_cond_signal(&rele_change);
-            }
-            else{
-                if(tmp>tmin){
-                    rele = 0;
-                    pthread_cond_signal(&rele_change);
-                }
-            }
-            break;
-            case 1:
-            if(tmp<tmin){
-                rele = 1;
-                pthread_cond_signal(&rele_change);
-            }
-            else{
+        if(RUN){}
+            switch(mode){
+                case 0:
                 if(tmp>tmax){
-                    rele = 0;
+                    rele = 1;
                     pthread_cond_signal(&rele_change);
                 }
+                else{
+                    if(tmp>tmin){
+                        rele = 0;
+                        pthread_cond_signal(&rele_change);
+                    }
+                }
+                break;
+                case 1:
+                if(tmp<tmin){
+                    rele = 1;
+                    pthread_cond_signal(&rele_change);
+                }
+                else{
+                    if(tmp>tmax){
+                        rele = 0;
+                        pthread_cond_signal(&rele_change);
+                    }
+                }
+                break;
             }
-            break;
         }
         pthread_mutex_unlock(&m);
     }
@@ -180,12 +174,25 @@ void *send_TMP(void*arg){
 
 void *amb(void*arg){
     while(1){
-    srand(time(0));
-    if(rele == 0){
-
-    }
-
-    delay()
+        pthread_mutex_lock(&m);
+        if(rele == 0){
+            if(TMP > AMB){
+                TMP = TMP - (TMP-AMB)/4;
+            }
+            if(TMP<AMB){
+                TMP = TMP + (AMB-TMP)/4;
+            }
+        }
+        if(rele == 1){
+            if(mode == 0){
+                TMP = TMP - 1;
+            }
+            if(mode == 1){
+                TMP = TMP + 1;
+            }
+        }
+        pthread_mutex_unlock(&m);
+        delay(3000);
     }
 }
 
