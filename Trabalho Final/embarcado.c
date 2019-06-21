@@ -50,7 +50,7 @@ void *leitura(void *arg) {
 
 //função para receber comandos
 void *cmd_read(void *arg){
-    char buffer[256];
+    char buffer[256],s[];
     int n;
     while(1){
         bzero(buffer,sizeof(buffer));
@@ -93,7 +93,8 @@ void *cmd_read(void *arg){
         }
         if(strcmp(buffer,"status")){
             pthread_mutex_lock(&m);
-            n = send(sockfd,("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN),50,0);
+            s = ("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN);
+            n = send(sockfd,s,50,0);
             if (n == -1) {
                 printf("\nErro escrevendo no socket!\n");
                 return -1;
@@ -110,7 +111,9 @@ A cada 1 segundo
         Avisa o sistema da mudança de temperatura
 */
 void *TMP_read(void*arg){
-    temp_ant = TMP;
+    pthread_mutex_lock(&m);
+    float temp_ant = TMP;
+    pthread_mutex_unlock(&m);
     while(1){
         pthread_mutex_lock(&m);
         if(TMP-temp_ant>=0.1 || -0.1>=TMP-temp_ant){
@@ -118,8 +121,9 @@ void *TMP_read(void*arg){
             pthread_cond_signal(&TMP_change);
         }
         pthread_mutex_unlock(&m);
+        delay(1000);
     }
-    delay(1000);
+    
 }
 
 //controle do relé
@@ -130,24 +134,24 @@ void *on_off(void*arg){
         if(RUN){}
             switch(mode){
                 case 0:
-                if(tmp>tmax){
+                if(TMP>tmax){
                     rele = 1;
                     pthread_cond_signal(&rele_change);
                 }
                 else{
-                    if(tmp>tmin){
+                    if(TMP>tmin){
                         rele = 0;
                         pthread_cond_signal(&rele_change);
                     }
                 }
                 break;
                 case 1:
-                if(tmp<tmin){
+                if(TMP<tmin){
                     rele = 1;
                     pthread_cond_signal(&rele_change);
                 }
                 else{
-                    if(tmp>tmax){
+                    if(TMP>tmax){
                         rele = 0;
                         pthread_cond_signal(&rele_change);
                     }
@@ -160,10 +164,13 @@ void *on_off(void*arg){
 }
 
 void *send_TMP(void*arg){
+    int n;
+    char s[];
     while(1){
         pthread_cond_wait(&TMP_change,&m);
         pthread_mutex_lock(&m);
-        n = send(sockfd,("Temperatura: %f",TMP),50,0);
+        s = ("Temperatura: %f",TMP)
+        n = send(sockfd,s,50,0);
         if (n == -1) {
             printf("\nErro escrevendo no socket!\n");
             return -1;
