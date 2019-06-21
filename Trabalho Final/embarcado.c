@@ -50,7 +50,7 @@ void *leitura(void *arg) {
 
 //função para receber comandos
 void *cmd_read(void *arg){
-    char buffer[256],s[];
+    char buffer[256];
     int n;
     while(1){
         bzero(buffer,sizeof(buffer));
@@ -93,7 +93,7 @@ void *cmd_read(void *arg){
         }
         if(strcmp(buffer,"status")){
             pthread_mutex_lock(&m);
-            s = ("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN);
+            buffer = ("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN);
             n = send(sockfd,s,50,0);
             if (n == -1) {
                 printf("\nErro escrevendo no socket!\n");
@@ -165,11 +165,11 @@ void *on_off(void*arg){
 
 void *send_TMP(void*arg){
     int n;
-    char s[];
+    char buffer[256];
     while(1){
         pthread_cond_wait(&TMP_change,&m);
         pthread_mutex_lock(&m);
-        s = ("Temperatura: %f",TMP)
+        buffer = ("Temperatura: %f",TMP)
         n = send(sockfd,s,50,0);
         if (n == -1) {
             printf("\nErro escrevendo no socket!\n");
