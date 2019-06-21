@@ -169,7 +169,7 @@ void *send_TMP(void*arg){
     while(1){
         pthread_cond_wait(&TMP_change,&m);
         pthread_mutex_lock(&m);
-        buffer = ("Temperatura: %f",TMP)
+        buffer = "Temperatura: %f",TMP;
         n = send(sockfd,buffer,50,0);
         if (n == -1) {
             printf("\nErro escrevendo no socket!\n");
