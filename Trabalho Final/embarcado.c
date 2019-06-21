@@ -93,8 +93,8 @@ void *cmd_read(void *arg){
         }
         if(strcmp(buffer,"status")){
             pthread_mutex_lock(&m);
-            buffer = ("Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN);
-            n = send(sockfd,s,50,0);
+            buffer = "Temperatura atual: %f\nModo %i\nTemperatura mínima: %i\nTemperatura máxima: %i\nRele: %i\nRun: %i",TMP,mode,tmin,tmax,rele,RUN;
+            n = send(sockfd,buffer,50,0);
             if (n == -1) {
                 printf("\nErro escrevendo no socket!\n");
                 return -1;
@@ -170,7 +170,7 @@ void *send_TMP(void*arg){
         pthread_cond_wait(&TMP_change,&m);
         pthread_mutex_lock(&m);
         buffer = ("Temperatura: %f",TMP)
-        n = send(sockfd,s,50,0);
+        n = send(sockfd,buffer,50,0);
         if (n == -1) {
             printf("\nErro escrevendo no socket!\n");
             return -1;
