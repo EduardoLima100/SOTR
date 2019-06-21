@@ -90,12 +90,6 @@ void *embarcado(void *arg){
             pthread_mutex_unlock(&m);
             pthread_exit(NULL);
         }
-        else{
-            if(strcmp(buffer,"temp") == 0){} //recebendo temperatura atual(quando há mudança de temperatura)
-            else{
-                if(strcmp(buffer,"state") == 0){} //recebendo informações de estado (temperatura,modo, max e min)
-            }
-        }
     }
 }
 
@@ -158,7 +152,7 @@ int main(int argc, char *argv[]) {
             printf("Cliente %i ficou online", id);
         }
         nodo[id].estado = 1;
-        pthread_create(&t, NULL, cliente, (void *)id);
+        pthread_create(&t, NULL, embarcado, (void *)id);
         //id++;
         pthread_mutex_unlock(&m);
         // MUTEX UNLOCK - GERAL
