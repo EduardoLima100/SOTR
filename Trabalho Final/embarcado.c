@@ -8,6 +8,7 @@
 #include <netdb.h> 
 #include <arpa/inet.h>      // inet_aton
 #include <pthread.h>
+#include<time.h>
 
 #define AMB 22
 
@@ -32,6 +33,12 @@ int tmin, tmax; //temperatura: min e max
 int mode = 0; //0 para esfriar 1 para esquentar
 
 int sockfd;
+
+void delay(unsigned int mseconds)
+{
+    clock_t goal = mseconds + clock();
+    while (goal > clock());
+}
 
 //função modelo
 void *leitura(void *arg) {
