@@ -9,8 +9,10 @@
 #include <arpa/inet.h>      // inet_aton
 #include <pthread.h>
 
+#define AMB 22
+
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t tmp_change = PTHREAD_COND_INITIALIZER;
+pthread_cond_t TMP_change = PTHREAD_COND_INITIALIZER;
 pthread_cond_t rele_change = PTHREAD_COND_INITIALIZER;
 
 /*
@@ -22,11 +24,13 @@ THREADS:
 * void *write_control(void *args)
 */
 
-float tmp; //entrada do sensor
+float TMP; //entrada do sensor
+int RUN = 0;
 int rele = 0;
 
-int tmin, tmax;
-int mode; //1 for cool and 2 for heat
+
+int tmin, tmax; //temperatura: min e max
+int mode = 0; //0 para esfriar 1 para esquentar
 
 int sockfd;
 
@@ -45,28 +49,94 @@ void *leitura(void *arg) {
     }
 }
 
-//leitura de temperatura
-void *tmp_read(void*arg){
+//função para receber comandos
+void *cmd_read(void *arg){
+    char buffer[256];
+    int n;
+    while(1){
+        bzero(buffer,sizeof(buffer));
+        n = recv(sockfd,buffer,50,0);
+        if(n<=0){
+            printf("\nErro lendo do socket!\n");
+            exit(1);
+        }
+        if(strcmp(buffer,"on")){
+            RUN = 1;
+        }
+        if(strcmp(buffer,"off")){
+            RUN = 0;
+        }
+        if(strcmp(buffer,"minmax")){
+            bzero(buffer,sizeof(buffer));
+            n = recv(sockfd,buffer,50,0);
+            if(n<=0){
+                printf("\nErro lendo do socket!\n");
+                exit(1);
+            }
+            tmin = int(buffer);
+            bzero(buffer,sizeof(buffer));
+            n = recv(sockfd,buffer,50,0);
+            if(n<=0){
+                printf("\nErro lendo do socket!\n");
+                exit(1);
+            }
+            tmax = int(buffer);
+
+        }
+        if(strcmp(buffer,"mode")){
+            bzero(buffer,sizeof(buffer));
+            n = recv(sockfd,buffer,50,0);
+            if(n<=0){
+                printf("\nErro lendo do socket!\n");
+                exit(1);
+            }
+            mode = int(buffer);
+        }
+        if(strcmp(buffer,"status")){
+            pthread_mutex_lock(&m);
+            n = send(sockfd,("
+                Temperatura atual: %f\n
+                Modo %i\n
+                Temperatura mínima: %i\n
+                Temperatura máxima: %i\n
+                Rele: %i\n
+                Run: %i",
+                TMP,mode,tmin,tmax,rele,RUN),50,0);
+            if (n == -1) {
+                printf("\nErro escrevendo no socket!\n");
+                return -1;
+            }
+            pthread_mutex_unlock(&m);
+        }
+    }
+}
+
+/*LEITURA DE TEMPERATURA
+A cada 1 segundo
+    Verifica temperatura atual
+    Se houver diferença maior que 0.1ºC entre duas medições
+        Avisa o sistema da mudança de temperatura
+*/
+void *TMP_read(void*arg){
+    temp_ant = TMP;
     while(1){
         pthread_mutex_lock(&m);
-        temp_ant = temp;
-        temp = tmp;
-
-        if(temp-temp_ant>0.1 || -0.1<temp-temp_ant){
-            pthread_cond_signal(&tmp_change);
+        if(TMP-temp_ant>=0.1 || -0.1>=TMP-temp_ant){
+            temp_ant = TMP;
+            pthread_cond_signal(&TMP_change);
         }
         pthread_mutex_unlock(&m);
     }
-    delay(5000);
+    delay(1000);
 }
 
 //controle do relé
-void *on_off(){
+void *on_off(void*arg){
     while(1){
-        pthread_cond_wait(&tmp_change, &m);
+        pthread_cond_wait(&TMP_change, &m);
         pthread_mutex_lock(&m);
         switch(mode){
-            case 1:
+            case 0:
             if(tmp>tmax){
                 rele = 1;
                 pthread_cond_signal(&rele_change);
@@ -78,7 +148,7 @@ void *on_off(){
                 }
             }
             break;
-            case 2:
+            case 1:
             if(tmp<tmin){
                 rele = 1;
                 pthread_cond_signal(&rele_change);
@@ -95,12 +165,35 @@ void *on_off(){
     }
 }
 
+void *send_TMP(void*arg){
+    while(1){
+        pthread_cond_wait(&TMP_change,&m);
+        pthread_mutex_lock(&m);
+        n = send(sockfd,("Temperatura: %f",TMP),50,0);
+        if (n == -1) {
+            printf("\nErro escrevendo no socket!\n");
+            return -1;
+        }
+        pthread_mutex_unlock(&m);
+    }
+}
+
+void *amb(void*arg){
+    while(1){
+    srand(time(0));
+    if(rele == 0){
+
+    }
+
+    delay()
+    }
+}
 
 //código pouco modificado daqui para frente
 int main(int argc, char *argv[]) {
     int portno, n;
     struct sockaddr_in serv_addr;
-    pthread_t t;
+    pthread_t t[5];
 
     char buffer[256];
     if (argc < 3) {
@@ -122,20 +215,23 @@ int main(int argc, char *argv[]) {
         printf("\nErro conectando!\n");
         return -1;
     }
-    pthread_create(&t, NULL, leitura, NULL);
+    
+    pthread_create(&t[0], NULL, cmd_read, NULL);
+    pthread_create(&t[1], NULL, TMP_read, NULL);
+    pthread_create(&t[2], NULL, on_off, NULL);
+    pthread_create(&t[3], NULL, send_TMP, NULL);
     do {
         bzero(buffer,sizeof(buffer));
-        printf("\nDigite a mensagem (ou sair):");
+        printf("\nDigite sair para desconectar:");
         fgets(buffer,50,stdin);
-        n = send(sockfd,buffer,50,0);
-        if (n == -1) {
-            printf("\nErro escrevendo no socket!\n");
-            return -1;
-        }
         if (strcmp(buffer,"sair\n") == 0) {
-            send(sockfd, "sair", 4, 0);
+            n = send(sockfd, "sair", 4, 0);
+            if (n == -1) {
+                printf("\nErro escrevendo no socket!\n");
+                return -1;
+            }
             break;
-        }
+        }        
     } while (1);
     close(sockfd);
     return 0;
