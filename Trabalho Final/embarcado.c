@@ -25,7 +25,7 @@ THREADS:
 * void *write_control(void *args)
 */
 
-float TMP; //entrada do sensor
+float TMP = AMB; //entrada do sensor
 int RUN = 0;
 int rele = 0;
 
@@ -119,10 +119,12 @@ A cada 1 segundo
 */
 void *TMP_read(void*arg){
     pthread_mutex_lock(&m);
+    printf("\nLeitor de temperatura ligado.");
     float temp_ant = TMP;
     pthread_mutex_unlock(&m);
     while(1){
         pthread_mutex_lock(&m);
+        printf("Temperatura = %f",TMP);
         if(TMP-temp_ant>=0.1 || -0.1>=TMP-temp_ant){
             temp_ant = TMP;
             pthread_cond_signal(&TMP_change);
